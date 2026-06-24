@@ -1,0 +1,34 @@
+{
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 63104,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 9.100738463488804,
+    "medianResTime" : 8.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 72.0,
+    "pct1ResTime" : 12.0,
+    "pct2ResTime" : 13.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 1052.996929648912,
+    "receivedKBytesPerSec" : 1104.4127953544253,
+    "sentKBytesPerSec" : 384.59067547723936
+  },
+  "GET /api/grades" : {
+    "transaction" : "GET /api/grades",
+    "sampleCount" : 63104,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 9.100738463488804,
+    "medianResTime" : 8.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 72.0,
+    "pct1ResTime" : 12.0,
+    "pct2ResTime" : 13.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 1052.996929648912,
+    "receivedKBytesPerSec" : 1104.4127953544253,
+    "sentKBytesPerSec" : 384.59067547723936
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "GET /api/baseline/grades" : {
+    "transaction" : "GET /api/baseline/grades",
+    "sampleCount" : 63271,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 9.074473297403273,
+    "medianResTime" : 9.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 67.0,
+    "pct1ResTime" : 12.0,
+    "pct2ResTime" : 13.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 1055.677912370274,
+    "receivedKBytesPerSec" : 1107.2246854352288,
+    "sentKBytesPerSec" : 394.84828167755364
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 63271,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 9.074473297403273,
+    "medianResTime" : 9.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 67.0,
+    "pct1ResTime" : 12.0,
+    "pct2ResTime" : 13.0,
+    "pct3ResTime" : 15.0,
+    "throughput" : 1055.677912370274,
+    "receivedKBytesPerSec" : 1107.2246854352288,
+    "sentKBytesPerSec" : 394.84828167755364
+  }
+}

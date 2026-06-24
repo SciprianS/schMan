@@ -1,0 +1,35 @@
+{
+  "name": "school-management-api",
+  "version": "1.0.0",
+  "description": "API securizat pentru sistem de management scolar - Lucrare de dizertatie Serac Ciprian TTIA21",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
+    "test:verbose": "jest --runInBand --verbose",
+    "migrate": "node-pg-migrate",
+    "migrate:create": "node-pg-migrate create"
+  },
+  "dependencies": {
+    "@casl/ability": "^6.8.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "node-pg-migrate": "^8.0.4",
+    "nodemon": "^3.0.0",
+    "supertest": "^6.3.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 15000,
+    "runInBand": true
+  }
+}

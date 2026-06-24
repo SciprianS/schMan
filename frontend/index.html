@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catalog — Sistem de Management Școlar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+<style>
+:root {
+  --navy:      #1B2A4A;
+  --navy-deep: #11192E;
+  --paper:     #F7F2E7;
+  --paper-dim: #EFE7D6;
+  --ink:       #20242E;
+  --ink-soft:  #5B5F6B;
+  --gold:      #B8923E;
+  --gold-soft: #DCC68E;
+  --line:      #D8CDB2;
+  --green:     #2E7D32;
+  --green-bg:  #E7F2E8;
+  --red:       #B3261E;
+  --red-bg:    #FBE9E8;
+  --radius:    3px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--gold-soft); }
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Topbar */
+.topbar {
+  background: var(--navy);
+  color: var(--paper);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--gold);
+  flex-shrink: 0;
+}
+.brand-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+.brand-sub {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--gold-soft);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.who { display: flex; align-items: center; gap: 12px; }
+.who-name { font-weight: 600; font-size: 14px; }
+.role-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  color: var(--gold-soft);
+}
+.logout-btn {
+  background: none; border: none;
+  color: rgba(247,242,231,0.65);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.logout-btn:hover { color: var(--paper); }
+
+/* Shell */
+.shell { flex: 1; display: flex; max-width: 1160px; width: 100%; margin: 0 auto; padding: 0 28px; }
+
+/* Sidebar */
+.sidebar {
+  width: 188px;
+  flex-shrink: 0;
+  padding: 28px 0;
+  border-right: 1px solid var(--line);
+}
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 10px 6px;
+}
+.nav-btn {
+  display: block; width: 100%;
+  text-align: left; background: none;
+  border: none; border-left: 3px solid transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 500;
+  color: var(--ink);
+  padding: 9px 12px; margin-bottom: 2px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.nav-btn:hover { background: var(--paper-dim); }
+.nav-btn.active {
+  border-left-color: var(--gold);
+  background: var(--paper-dim);
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* Content */
+.content { flex: 1; padding: 30px 0 60px 32px; min-width: 0; }
+.page-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 26px; font-weight: 700;
+  color: var(--navy); margin-bottom: 4px;
+}
+.page-sub { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 24px; }
+
+/* Toolbar */
+.toolbar {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 14px; gap: 10px;
+}
+.count-label { font-size: 13px; color: var(--ink-soft); }
+
+/* Table */
+.ledger {
+  width: 100%; border-collapse: collapse;
+  background: #fff; border: 1px solid var(--line);
+}
+.ledger thead th {
+  text-align: left; padding: 10px 14px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--navy); background: var(--paper-dim);
+  border-bottom: 2px solid var(--navy);
+}
+.ledger tbody td {
+  padding: 11px 14px; font-size: 13.5px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.ledger tbody tr:last-child td { border-bottom: none; }
+.ledger tbody tr:hover { background: #FCFAF5; }
+.row-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); }
+.grade-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 15px; }
+.grade-val.low  { color: var(--red); }
+.grade-val.mid  { color: #9A7B17; }
+.grade-val.high { color: var(--green); }
+.muted { color: var(--ink-soft); }
+
+/* Status pill */
+.pill {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.4px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px;
+}
+.pill.ok       { background: var(--green-bg); color: var(--green); }
+.pill.blocked  { background: var(--red-bg);   color: var(--red); }
+.pill.neutral  { background: var(--paper-dim); color: var(--navy); }
+
+/* Buttons */
+.btn {
+  font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600;
+  padding: 8px 15px; border-radius: var(--radius);
+  border: 1px solid var(--navy); background: var(--navy);
+  color: var(--paper); cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: var(--navy-deep, #11192E); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--navy); }
+.btn.ghost:hover { background: var(--paper-dim); }
+.btn.danger { background: var(--red); border-color: var(--red); }
+.btn.danger:hover:not(:disabled) { background: #8E1F19; }
+.btn.sm { padding: 5px 10px; font-size: 12px; }
+
+/* Alerts */
+.alert {
+  padding: 10px 14px; border-radius: var(--radius); font-size: 13.5px; margin-bottom: 14px;
+}
+.alert.error { background: var(--red-bg); color: var(--red); border: 1px solid #EFC4C0; }
+.alert.info  { background: var(--paper-dim); color: var(--ink-soft); border: 1px solid var(--line); }
+
+/* Empty state */
+.empty {
+  padding: 44px 24px; text-align: center;
+  color: var(--ink-soft); background: #fff;
+  border: 1px dashed var(--line);
+}
+.empty strong { display: block; color: var(--ink); margin-bottom: 4px; font-size: 15px; }
+
+/* Forms */
+.field { margin-bottom: 14px; }
+label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 5px; }
+input, select {
+  font-family: 'Inter', sans-serif; font-size: 14px;
+  padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: var(--radius); background: #fff;
+  color: var(--ink); width: 100%;
+}
+input:focus, select:focus {
+  outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.form-row .full { grid-column: 1 / -1; }
+
+/* Modal */
+.backdrop {
+  position: fixed; inset: 0;
+  background: rgba(17,25,46,0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50;
+}
+.modal {
+  background: #fff; width: 400px; max-width: 92vw;
+  border-radius: var(--radius); padding: 26px;
+  border-top: 4px solid var(--gold);
+}
+.modal h3 {
+  font-family: 'Source Serif 4', serif;
+  color: var(--navy); font-size: 18px; margin-bottom: 18px;
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+/* Login */
+.login-wrap {
+  min-height: 100vh; display: flex;
+  align-items: center; justify-content: center;
+  background: radial-gradient(circle at 18% 22%, rgba(184,146,62,0.12), transparent 48%), var(--navy-deep);
+  padding: 24px;
+}
+.login-card {
+  width: 360px; max-width: 100%;
+  background: var(--paper); border-radius: 4px;
+  padding: 38px 34px 30px;
+  box-shadow: 0 28px 56px rgba(0,0,0,0.38);
+}
+.login-mark {
+  width: 42px; height: 42px; border: 2px solid var(--navy);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Source Serif 4', serif; font-weight: 700; font-size: 17px;
+  color: var(--navy); margin-bottom: 16px;
+}
+.login-card h1 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 22px; color: var(--navy); margin-bottom: 3px;
+}
+.login-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; }
+.login-demo {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px dashed var(--line);
+  font-size: 11.5px; color: var(--ink-soft); line-height: 1.75;
+}
+.login-demo code {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--paper-dim); padding: 1px 5px;
+  border-radius: 2px; font-size: 11px;
+}
+.spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px; margin-right: 7px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .shell { flex-direction: column; padding: 0 16px; }
+  .sidebar {
+    width: 100%; border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 0; display: flex; gap: 4px; overflow-x: auto;
+  }
+  .sidebar-label { display: none; }
+  .content { padding: 22px 0 40px; }
+  .form-row { grid-template-columns: 1fr; }
+  .topbar { padding: 14px 18px; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+"use strict";
+
+const { useState, useEffect, useCallback } = React;
+
+const API = "http://localhost:3000/api";
+
+async function api(path, opts = {}) {
+  const headers = { "Content-Type": "application/json" };
+  if (opts.token) headers["Authorization"] = "Bearer " + opts.token;
+  const res = await fetch(API + path, {
+    method: opts.method || "GET",
+    headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  let data = null;
+  try { data = await res.json(); } catch(_) {}
+  if (!res.ok) throw new Error((data && data.error) || "Eroare " + res.status);
+  return data;
+}
+
+const ROLE = { admin: "Administrator", professor: "Profesor", student: "Elev" };
+
+function gradeClass(v) {
+  const n = parseFloat(v);
+  if (n < 5) return "low";
+  if (n < 7) return "mid";
+  return "high";
+}
+
+/* ─── Login ─── */
+function Login({ onLogin }) {
+  const [email, setEmail] = useState("admin@scoala.ro");
+  const [pass, setPass]   = useState("");
+  const [err, setErr]     = useState("");
+  const [busy, setBusy]   = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr(""); setBusy(true);
+    try {
+      const d = await api("/auth/login", { method: "POST", body: { email, password: pass } });
+      onLogin(d.token, d.user);
+    } catch (ex) {
+      setErr(ex.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="login-wrap">
+      <form className="login-card" onSubmit={submit}>
+        <div className="login-mark">C</div>
+        <h1>Catalog Digital</h1>
+        <p className="login-sub">Autentificare în sistemul de management școlar</p>
+        {err && <div className="alert error">{err}</div>}
+        <div className="field">
+          <label>Adresă de e-mail</label>
+          <input type="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+        </div>
+        <div className="field">
+          <label>Parolă</label>
+          <input type="password" value={pass}
+            onChange={(e) => setPass(e.target.value)} required autoComplete="current-password" />
+        </div>
+        <button className="btn" style={{ width: "100%" }} disabled={busy}>
+          {busy && <span className="spinner"/>}
+          {busy ? "Se verifică..." : "Intră în catalog"}
+        </button>
+        <div className="login-demo">
+          Conturi demo — parolă <code>Test1234!</code><br/>
+          <code>admin@scoala.ro</code> · <code>ionescu@scoala.ro</code><br/>
+          <code>ion.popescu@scoala.ro</code>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* ─── Grades ─── */
+function Grades({ token, user }) {
+  const [rows, setRows]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr]         = useState("");
+  const [modal, setModal]     = useState(false);
+  const [form, setForm]       = useState({ studentId:"", courseId:"", value:"", description:"" });
+  const [saving, setSaving]   = useState(false);
+
+  const canAdd    = user.role === "professor";
+  const canDelete = user.role === "admin";
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr("");
+    try { setRows(await api("/grades", { token })); }
+    catch (ex) { setErr(ex.message); }
+    finally { setLoading(false); }
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async (e) => {
+    e.preventDefault(); setSaving(true); setErr("");
+    try {
+      await api("/grades", { method:"POST", token, body:{
+        studentId: Number(form.studentId),
+        courseId:  Number(form.courseId),
+        value:     Number(form.value),
+        description: form.description || undefined,
+      }});
+      setModal(false);
+      setForm({ studentId:"", courseId:"", value:"", description:"" });
+      load();
+    } catch (ex) { setErr(ex.message); }
+    finally { setSaving(false); }
+  };
+
+  const del = async (id) => {
+    if (!confirm("Ștergi definitiv această notă?")) return;
+    try { await api("/grades/"+id, { method:"DELETE", token }); load(); }
+    catch (ex) { setErr(ex.message); }
+  };
+
+  const sub = { student:"Situația ta școlară curentă.", professor:"Notele acordate la cursurile tale.", admin:"Toate notele înregistrate în sistem." };
+
+  return (
+    <div>
+      <h1 className="page-title">Registrul de note</h1>
+      <p className="page-sub">{sub[user.role]}</p>
+      <div className="toolbar">
+        <span className="count-label">{rows.length} {rows.length === 1 ? "înregistrare" : "înregistrări"}</span>
+        {canAdd && <button className="btn" onClick={() => setModal(true)}>+ Adaugă notă</button>}
+      </div>
+      {err && <div className="alert error">{err}</div>}
+      {loading
+        ? <div className="alert info">Se încarcă registrul...</div>
+        : rows.length === 0
+          ? <div className="empty"><strong>Nicio notă înregistrată</strong>Nu există note vizibile pentru contul tău.</div>
+          : (
+            <table className="ledger">
+              <thead>
+                <tr>
+                  <th style={{width:52}}>Nr.</th>
+                  <th>Elev</th>
+                  <th>Curs</th>
+                  <th style={{width:70}}>Notă</th>
+                  <th>Descriere</th>
+                  <th style={{width:120}}>Data</th>
+                  {canDelete && <th style={{width:80}}></th>}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(g => (
+                  <tr key={g.id}>
+                    <td className="row-id">#{g.id}</td>
+                    <td>Elev #{g.student_id}</td>
+                    <td>Curs #{g.course_id}</td>
+                    <td><span className={"grade-val " + gradeClass(g.value)}>{g.value}</span></td>
+                    <td className="muted">{g.description || "—"}</td>
+                    <td className="row-id">{String(g.grade_date || g.created_at || "").slice(0,10)}</td>
+                    {canDelete && <td><button className="btn danger sm" onClick={() => del(g.id)}>Șterge</button></td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+      }
+      {modal && (
+        <div className="backdrop" onClick={() => setModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Adaugă notă nouă</h3>
+            <form onSubmit={save}>
+              <div className="form-row">
+                <div className="field">
+                  <label>ID Elev</label>
+                  <input type="number" required value={form.studentId}
+                    onChange={e => setForm({...form, studentId:e.target.value})} />
+                </div>
+                <div className="field">
+                  <label>ID Curs</label>
+                  <input type="number" required value={form.courseId}
+                    onChange={e => setForm({...form, courseId:e.target.value})} />
+                </div>
+                <div className="field">
+                  <label>Notă (1–10)</label>
+                  <input type="number" min="1" max="10" step="0.5" required value={form.value}
+                    onChange={e => setForm({...form, value:e.target.value})} />
+                </div>
+                <div className="field">
+                  <label>Descriere (opțional)</label>
+                  <input type="text" value={form.description}
+                    onChange={e => setForm({...form, description:e.target.value})} />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn ghost" onClick={() => setModal(false)}>Anulează</button>
+                <button type="submit" className="btn" disabled={saving}>
+                  {saving ? "Se salvează..." : "Salvează"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Students ─── */
+function Students({ token }) {
+  const [rows, setRows]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr]         = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try { setRows(await api("/students", { token })); }
+      catch (ex) { setErr(ex.message); }
+      finally { setLoading(false); }
+    })();
+  }, [token]);
+
+  return (
+    <div>
+      <h1 className="page-title">Elevi înregistrați</h1>
+      <p className="page-sub">Lista completă a profilurilor de elev din sistem.</p>
+      {err && <div className="alert error">{err}</div>}
+      {loading
+        ? <div className="alert info">Se încarcă...</div>
+        : rows.length === 0
+          ? <div className="empty"><strong>Niciun elev găsit</strong></div>
+          : (
+            <table className="ledger">
+              <thead>
+                <tr>
+                  <th style={{width:52}}>Nr.</th>
+                  <th>Nume</th>
+                  <th>Clasă</th>
+                  <th>An</th>
+                  <th>Părinte / tutore</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(s => (
+                  <tr key={s.id}>
+                    <td className="row-id">#{s.id}</td>
+                    <td>{s.first_name} {s.last_name}</td>
+                    <td>{s.class_name}</td>
+                    <td>{s.year}</td>
+                    <td className="muted">{s.parent_name || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+      }
+    </div>
+  );
+}
+
+/* ─── Users ─── */
+function Users({ token }) {
+  const [rows, setRows]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr]         = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setRows(await api("/users", { token })); }
+    catch (ex) { setErr(ex.message); }
+    finally { setLoading(false); }
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const deactivate = async (id) => {
+    if (!confirm("Dezactivezi acest cont?")) return;
+    try { await api("/users/"+id, { method:"DELETE", token }); load(); }
+    catch (ex) { setErr(ex.message); }
+  };
+
+  return (
+    <div>
+      <h1 className="page-title">Utilizatori</h1>
+      <p className="page-sub">Administrarea conturilor înregistrate în sistem.</p>
+      {err && <div className="alert error">{err}</div>}
+      {loading
+        ? <div className="alert info">Se încarcă...</div>
+        : (
+          <table className="ledger">
+            <thead>
+              <tr>
+                <th style={{width:52}}>Nr.</th>
+                <th>Nume</th>
+                <th>E-mail</th>
+                <th>Rol</th>
+                <th>Status</th>
+                <th style={{width:100}}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(u => (
+                <tr key={u.id}>
+                  <td className="row-id">#{u.id}</td>
+                  <td>{u.first_name} {u.last_name}</td>
+                  <td className="muted">{u.email}</td>
+                  <td><span className="pill neutral">{ROLE[u.role]}</span></td>
+                  <td>
+                    <span className={"pill " + (u.is_active ? "ok" : "blocked")}>
+                      {u.is_active ? "Activ" : "Inactiv"}
+                    </span>
+                  </td>
+                  <td>
+                    {u.is_active &&
+                      <button className="btn ghost sm" onClick={() => deactivate(u.id)}>Dezactivează</button>
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+      }
+    </div>
+  );
+}
+
+/* ─── Audit ─── */
+function Audit({ token }) {
+  const [rows, setRows]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr]         = useState("");
+  const [filter, setFilter]   = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr("");
+    try { setRows(await api("/audit" + (filter ? "?status="+filter : ""), { token })); }
+    catch (ex) { setErr(ex.message); }
+    finally { setLoading(false); }
+  }, [token, filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  return (
+    <div>
+      <h1 className="page-title">Jurnal de audit</h1>
+      <p className="page-sub">Istoricul acțiunilor efectuate asupra resurselor sensibile.</p>
+      <div className="toolbar">
+        <select value={filter} onChange={e => setFilter(e.target.value)} style={{width:200}}>
+          <option value="">Toate statusurile</option>
+          <option value="SUCCESS">Doar reușite</option>
+          <option value="FORBIDDEN">Doar blocate</option>
+        </select>
+        <span className="count-label">{rows.length} înregistrări</span>
+      </div>
+      {err && <div className="alert error">{err}</div>}
+      {loading
+        ? <div className="alert info">Se încarcă jurnalul...</div>
+        : rows.length === 0
+          ? <div className="empty"><strong>Niciun eveniment înregistrat</strong></div>
+          : (
+            <table className="ledger">
+              <thead>
+                <tr>
+                  <th>Utilizator</th>
+                  <th>Acțiune</th>
+                  <th>Resursă</th>
+                  <th>Status</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(l => (
+                  <tr key={l.id}>
+                    <td>
+                      <span className="row-id">#{l.user_id}</span>
+                      <span className="muted"> ({l.user_role})</span>
+                    </td>
+                    <td className="row-id">{l.action}</td>
+                    <td>{l.resource_type}{l.resource_id ? " #"+l.resource_id : ""}</td>
+                    <td>
+                      <span className={"pill " + (l.status === "SUCCESS" ? "ok" : "blocked")}>
+                        {l.status === "SUCCESS" ? "Reușit" : "Blocat"}
+                      </span>
+                    </td>
+                    <td className="row-id">
+                      {String(l.created_at || "").slice(0,19).replace("T"," ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+      }
+    </div>
+  );
+}
+
+/* ─── Dashboard ─── */
+const NAV = {
+  admin:     [["grades","Note"],["students","Elevi"],["users","Utilizatori"],["audit","Jurnal audit"]],
+  professor: [["grades","Note"],["students","Elevi"]],
+  student:   [["grades","Note"]],
+};
+
+function Dashboard({ token, user, onLogout }) {
+  const [view, setView] = useState("grades");
+  const tabs = NAV[user.role] || [["grades","Note"]];
+  const name = (user.firstName || user.first_name || "") + " " + (user.lastName || user.last_name || "");
+
+  return (
+    <div className="app">
+      <header className="topbar">
+        <div>
+          <div className="brand-title">Catalog Digital</div>
+          <div className="brand-sub">Sistem de management școlar</div>
+        </div>
+        <div className="who">
+          <span className="who-name">{name.trim()}</span>
+          <span className="role-pill">{ROLE[user.role]}</span>
+          <button className="logout-btn" onClick={onLogout}>Ieși din cont</button>
+        </div>
+      </header>
+      <div className="shell">
+        <nav className="sidebar">
+          <div className="sidebar-label">Navigare</div>
+          {tabs.map(([k,l]) => (
+            <button key={k} className={"nav-btn" + (view===k?" active":"")} onClick={() => setView(k)}>{l}</button>
+          ))}
+        </nav>
+        <main className="content">
+          {view === "grades"   && <Grades   token={token} user={user} />}
+          {view === "students" && <Students token={token} />}
+          {view === "users"    && <Users    token={token} />}
+          {view === "audit"    && <Audit    token={token} />}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+/* ─── App root ─── */
+function App() {
+  const [token, setToken] = useState(null);
+  const [user,  setUser]  = useState(null);
+
+  useEffect(() => {
+    try {
+      const s = sessionStorage.getItem("catalog");
+      if (s) { const p = JSON.parse(s); setToken(p.token); setUser(p.user); }
+    } catch(_) {}
+  }, []);
+
+  const login = (t, u) => {
+    setToken(t); setUser(u);
+    sessionStorage.setItem("catalog", JSON.stringify({ token: t, user: u }));
+  };
+
+  const logout = () => {
+    setToken(null); setUser(null);
+    sessionStorage.removeItem("catalog");
+  };
+
+  if (!token || !user) return <Login onLogin={login} />;
+  return <Dashboard token={token} user={user} onLogout={logout} />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
