@@ -4,25 +4,22 @@ function defineAbilityFor(user) {
   const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
 
   if (user.role === 'admin') {
-    // Adminul poate face orice
     can('manage', 'all');
 
   } else if (user.role === 'professor') {
     can('read',   'Student');
-    can('read',   'Grade');
-    // Poate crea/modifica note DOAR cu propriul ID
-    can('create', 'Grade', { professorId: user.id });
-    can('update', 'Grade', { professorId: user.id });
-    // Interzis explicit
+    // Profesorul poate citi DOAR notele acordate de el
+    can('read',   'Grade',  { professorId: user.id });
+    can('create', 'Grade',  { professorId: user.id });
+    can('update', 'Grade',  { professorId: user.id });
     cannot('delete', 'Grade');
     cannot('read',   'AuditLog');
     cannot('manage', 'User');
 
   } else if (user.role === 'student') {
-    // Poate citi DOAR propriile date
+    // Studentul poate citi DOAR datele proprii
     can('read', 'Grade',   { studentId: user.id });
     can('read', 'Student', { userId:    user.id });
-    // Interzis orice operatiune de scriere
     cannot('create', 'Grade');
     cannot('update', 'Grade');
     cannot('delete', 'Grade');

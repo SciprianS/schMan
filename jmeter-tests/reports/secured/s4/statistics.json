@@ -1,34 +1,34 @@
 {
   "Total" : {
     "transaction" : "Total",
-    "sampleCount" : 66487,
+    "sampleCount" : 69012,
     "errorCount" : 0,
     "errorPct" : 0.0,
-    "meanResTime" : 8.633747950727273,
+    "meanResTime" : 8.320581927780603,
     "medianResTime" : 8.0,
     "minResTime" : 1.0,
     "maxResTime" : 73.0,
-    "pct1ResTime" : 12.0,
-    "pct2ResTime" : 13.0,
-    "pct3ResTime" : 15.0,
-    "throughput" : 1109.3924680048724,
-    "receivedKBytesPerSec" : 254.59690427846192,
-    "sentKBytesPerSec" : 405.18826468146705
+    "pct1ResTime" : 11.0,
+    "pct2ResTime" : 12.0,
+    "pct3ResTime" : 14.0,
+    "throughput" : 1151.6972063682786,
+    "receivedKBytesPerSec" : 300.29604892610394,
+    "sentKBytesPerSec" : 424.0135222664464
   },
   "GET /api/grades" : {
     "transaction" : "GET /api/grades",
-    "sampleCount" : 66487,
+    "sampleCount" : 69012,
     "errorCount" : 0,
     "errorPct" : 0.0,
-    "meanResTime" : 8.633747950727273,
+    "meanResTime" : 8.320581927780603,
     "medianResTime" : 8.0,
     "minResTime" : 1.0,
     "maxResTime" : 73.0,
-    "pct1ResTime" : 12.0,
-    "pct2ResTime" : 13.0,
-    "pct3ResTime" : 15.0,
-    "throughput" : 1109.3924680048724,
-    "receivedKBytesPerSec" : 254.59690427846192,
-    "sentKBytesPerSec" : 405.18826468146705
+    "pct1ResTime" : 11.0,
+    "pct2ResTime" : 12.0,
+    "pct3ResTime" : 14.0,
+    "throughput" : 1151.6972063682786,
+    "receivedKBytesPerSec" : 300.29604892610394,
+    "sentKBytesPerSec" : 424.0135222664464
   }
 }

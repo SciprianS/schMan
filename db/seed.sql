@@ -5,27 +5,27 @@
 INSERT INTO users (email, password_hash, first_name, last_name, role) VALUES
 (
   'admin@scoala.ro',
-  '$2a$12$qi1S7zmpibYgP6YwKGjYG.7auGABVdrMn2e1uLA3fumCcglOW93dm',
+  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oA4gDmJWe',
   'Administrator', 'Sistem', 'admin'
 ),
 (
   'ionescu@scoala.ro',
-  '$2a$12$qi1S7zmpibYgP6YwKGjYG.7auGABVdrMn2e1uLA3fumCcglOW93dm',
+  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oA4gDmJWe',
   'Gheorghe', 'Ionescu', 'professor'
 ),
 (
   'popa@scoala.ro',
-  '$2a$12$qi1S7zmpibYgP6YwKGjYG.7auGABVdrMn2e1uLA3fumCcglOW93dm',
+  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oA4gDmJWe',
   'Maria', 'Popa', 'professor'
 ),
 (
   'ion.popescu@scoala.ro',
-  '$2a$12$qi1S7zmpibYgP6YwKGjYG.7auGABVdrMn2e1uLA3fumCcglOW93dm',
+  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oA4gDmJWe',
   'Ion', 'Popescu', 'student'
 ),
 (
   'andrei.ionescu@scoala.ro',
-  '$2a$12$qi1S7zmpibYgP6YwKGjYG.7auGABVdrMn2e1uLA3fumCcglOW93dm',
+  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oA4gDmJWe',
   'Andrei', 'Ionescu', 'student'
 );
 

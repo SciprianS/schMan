@@ -1,44 +1,36 @@
 const request = require('supertest');
-const app = require('../src/app');
-const db = require('../src/config/database');
+const app     = require('../src/app');
 const { seedTestData, clearTestData } = require('./helpers/db');
+const { getTokens } = require('./helpers/auth');
+
+let tokens;
 
 beforeAll(async () => {
   await seedTestData();
+  tokens = getTokens();
 });
-afterAll(async () => {
-  await clearTestData();
-});
+afterAll(async () => { await clearTestData(); });
 
 describe('POST /api/auth/register', () => {
+
   test('Creeaza cont nou cu date valide', async () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({
-        email: 'nou@test.ro',
-        password: 'Parola123!',
-        firstName: 'Utilizator',
-        lastName: 'Nou',
-        role: 'student',
+        email: 'nou@test.ro', password: 'Parola123!',
+        firstName: 'Utilizator', lastName: 'Nou', role: 'student'
       });
     expect(res.statusCode).toBe(201);
     expect(res.body.user).toHaveProperty('id');
     expect(res.body.user).not.toHaveProperty('password_hash');
-
-    if (res.statusCode !== 201) {
-      console.log('Response body:', res.body);
-    }
   });
 
   test('Respinge email duplicat', async () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({
-        email: 'admin@test.ro',
-        password: 'Test1234!',
-        firstName: 'Alt',
-        lastName: 'Admin',
-        role: 'admin',
+        email: 'admin@test.ro', password: 'Test1234!',
+        firstName: 'Alt', lastName: 'Admin', role: 'admin'
       });
     expect(res.statusCode).toBe(409);
   });
@@ -54,17 +46,15 @@ describe('POST /api/auth/register', () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({
-        email: 'rol@test.ro',
-        password: 'Test1234!',
-        firstName: 'Test',
-        lastName: 'Test',
-        role: 'superadmin',
+        email: 'rol@test.ro', password: 'Test1234!',
+        firstName: 'Test', lastName: 'Test', role: 'superadmin'
       });
     expect(res.statusCode).toBe(400);
   });
 });
 
 describe('POST /api/auth/login', () => {
+
   test('Login reusit cu credentiale corecte', async () => {
     const res = await request(app)
       .post('/api/auth/login')
@@ -92,6 +82,7 @@ describe('POST /api/auth/login', () => {
 });
 
 describe('GET /api/auth/me', () => {
+
   test('Returneaza profilul utilizatorului autentificat', async () => {
     const login = await request(app)
       .post('/api/auth/login')

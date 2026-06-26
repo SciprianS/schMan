@@ -54,7 +54,7 @@
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBzY29hbGEucm8iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3ODAyNDYwNDIsImV4cCI6MTc4MDI3NDg0Mn0.yeDdeKrel_TYrBTZugVP2I_64Ftr1Lmg1PB63DjRwFY</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjkzLCJlbWFpbCI6ImFkbWluQHNjb2FsYS5ybyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc4MjMxNzg1NSwiZXhwIjoxNzgyMzQ2NjU1fQ.AD8R_TEPpx1gd9tENG80ZNgUByNqITCHirDI8To5pdc</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Content-Type</stringProp>

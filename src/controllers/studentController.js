@@ -5,6 +5,11 @@ const { logAction } = require('../services/auditService');
 // GET /api/students
 async function list(req, res) {
   try {
+    // Studentul nu poate lista toti elevii — doar isi poate vedea propriul profil
+    if (req.user.role === 'student') {
+      return res.status(403).json({ error: 'Acces interzis.' });
+    }
+
     const result = await db.query(
       `SELECT s.*, u.first_name, u.last_name, u.email
        FROM students s
