@@ -105,10 +105,25 @@ async function seedTestData() {
 
 async function clearTestData() {
   await db.query('DELETE FROM audit_logs');
-  await db.query('DELETE FROM grades');
-  await db.query('DELETE FROM students');
-  await db.query('DELETE FROM courses');
+
+  // Sterge DOAR datele create de utilizatorii de test (@test.ro)
+  await db.query(`
+    DELETE FROM grades WHERE professor_id IN (
+      SELECT id FROM users WHERE email LIKE '%@test.ro'
+    )
+  `);
+  await db.query(`
+    DELETE FROM students WHERE user_id IN (
+      SELECT id FROM users WHERE email LIKE '%@test.ro'
+    )
+  `);
+  await db.query(`
+    DELETE FROM courses WHERE professor_id IN (
+      SELECT id FROM users WHERE email LIKE '%@test.ro'
+    )
+  `);
   await db.query("DELETE FROM users WHERE email LIKE '%@test.ro'");
+}
 }
 
 module.exports = { seedTestData, clearTestData };
