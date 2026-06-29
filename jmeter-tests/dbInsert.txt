@@ -1,0 +1,31 @@
+# Adaugă profilele de elev
+# Înlocuiește 3 și 4 cu ID-urile reale ale elevilor din outputul de mai sus
+curl -s -X POST http://localhost:3000/api/students \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId":295,"className":"10A","year":2025,"parentName":"Maria Popescu"}'
+
+curl -s -X POST http://localhost:3000/api/students \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId":296,"className":"10A","year":2025,"parentName":"Elena Ionescu"}'
+
+# Adaugă cursuri și note prin PostgreSQL
+# Înlocuiește 2 cu ID-ul real al profesorului și 3,4 cu ID-urile elevilor
+sudo -u postgres psql -d school_db << 'SQL'
+INSERT INTO courses (name, professor_id, semester, year)
+VALUES
+  ('Matematica',  294, 1, 2025),
+  ('Fizica',      294, 1, 2025),
+  ('Informatica', 294, 1, 2025);
+
+INSERT INTO grades (student_id, course_id, professor_id, value, description)
+VALUES
+  (295, 1, 2, 8.50, 'Teza semestrul I'),
+  (295, 2, 2, 7.00, 'Lucrare practica'),
+  (296, 1, 2, 9.00, 'Teza semestrul I'),
+  (296, 3, 2, 6.50, 'Test unitate');
+
+SELECT 'Note inserate:' as info;
+SELECT id, student_id, course_id, professor_id, value FROM grades ORDER BY id;
+SQL

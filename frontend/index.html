@@ -1,768 +1,2047 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ro">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Catalog — Sistem de Management Școlar</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
-<style>
-:root {
-  --navy:      #1B2A4A;
-  --navy-deep: #11192E;
-  --paper:     #F7F2E7;
-  --paper-dim: #EFE7D6;
-  --ink:       #20242E;
-  --ink-soft:  #5B5F6B;
-  --gold:      #B8923E;
-  --gold-soft: #DCC68E;
-  --line:      #D8CDB2;
-  --green:     #2E7D32;
-  --green-bg:  #E7F2E8;
-  --red:       #B3261E;
-  --red-bg:    #FBE9E8;
-  --radius:    3px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-::selection { background: var(--gold-soft); }
-.app { min-height: 100vh; display: flex; flex-direction: column; }
-
-/* Topbar */
-.topbar {
-  background: var(--navy);
-  color: var(--paper);
-  padding: 16px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 3px solid var(--gold);
-  flex-shrink: 0;
-}
-.brand-title {
-  font-family: 'Source Serif 4', serif;
-  font-size: 20px;
-  font-weight: 600;
-}
-.brand-sub {
-  font-size: 10.5px;
-  font-weight: 500;
-  color: var(--gold-soft);
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  margin-top: 3px;
-}
-.who { display: flex; align-items: center; gap: 12px; }
-.who-name { font-weight: 600; font-size: 14px; }
-.role-pill {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 3px 9px;
-  border-radius: 999px;
-  border: 1px solid var(--gold);
-  color: var(--gold-soft);
-}
-.logout-btn {
-  background: none; border: none;
-  color: rgba(247,242,231,0.65);
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.logout-btn:hover { color: var(--paper); }
-
-/* Shell */
-.shell { flex: 1; display: flex; max-width: 1160px; width: 100%; margin: 0 auto; padding: 0 28px; }
-
-/* Sidebar */
-.sidebar {
-  width: 188px;
-  flex-shrink: 0;
-  padding: 28px 0;
-  border-right: 1px solid var(--line);
-}
-.sidebar-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin: 0 0 10px 6px;
-}
-.nav-btn {
-  display: block; width: 100%;
-  text-align: left; background: none;
-  border: none; border-left: 3px solid transparent;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px; font-weight: 500;
-  color: var(--ink);
-  padding: 9px 12px; margin-bottom: 2px;
-  border-radius: var(--radius);
-  cursor: pointer;
-}
-.nav-btn:hover { background: var(--paper-dim); }
-.nav-btn.active {
-  border-left-color: var(--gold);
-  background: var(--paper-dim);
-  font-weight: 700;
-  color: var(--navy);
-}
-
-/* Content */
-.content { flex: 1; padding: 30px 0 60px 32px; min-width: 0; }
-.page-title {
-  font-family: 'Source Serif 4', serif;
-  font-size: 26px; font-weight: 700;
-  color: var(--navy); margin-bottom: 4px;
-}
-.page-sub { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 24px; }
-
-/* Toolbar */
-.toolbar {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-bottom: 14px; gap: 10px;
-}
-.count-label { font-size: 13px; color: var(--ink-soft); }
-
-/* Table */
-.ledger {
-  width: 100%; border-collapse: collapse;
-  background: #fff; border: 1px solid var(--line);
-}
-.ledger thead th {
-  text-align: left; padding: 10px 14px;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  color: var(--navy); background: var(--paper-dim);
-  border-bottom: 2px solid var(--navy);
-}
-.ledger tbody td {
-  padding: 11px 14px; font-size: 13.5px;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-.ledger tbody tr:last-child td { border-bottom: none; }
-.ledger tbody tr:hover { background: #FCFAF5; }
-.row-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-soft); }
-.grade-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 15px; }
-.grade-val.low  { color: var(--red); }
-.grade-val.mid  { color: #9A7B17; }
-.grade-val.high { color: var(--green); }
-.muted { color: var(--ink-soft); }
-
-/* Status pill */
-.pill {
-  display: inline-block; font-size: 10px; font-weight: 700;
-  letter-spacing: 0.4px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 999px;
-}
-.pill.ok       { background: var(--green-bg); color: var(--green); }
-.pill.blocked  { background: var(--red-bg);   color: var(--red); }
-.pill.neutral  { background: var(--paper-dim); color: var(--navy); }
-
-/* Buttons */
-.btn {
-  font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600;
-  padding: 8px 15px; border-radius: var(--radius);
-  border: 1px solid var(--navy); background: var(--navy);
-  color: var(--paper); cursor: pointer;
-}
-.btn:hover:not(:disabled) { background: var(--navy-deep, #11192E); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn.ghost { background: transparent; color: var(--navy); }
-.btn.ghost:hover { background: var(--paper-dim); }
-.btn.danger { background: var(--red); border-color: var(--red); }
-.btn.danger:hover:not(:disabled) { background: #8E1F19; }
-.btn.sm { padding: 5px 10px; font-size: 12px; }
-
-/* Alerts */
-.alert {
-  padding: 10px 14px; border-radius: var(--radius); font-size: 13.5px; margin-bottom: 14px;
-}
-.alert.error { background: var(--red-bg); color: var(--red); border: 1px solid #EFC4C0; }
-.alert.info  { background: var(--paper-dim); color: var(--ink-soft); border: 1px solid var(--line); }
-
-/* Empty state */
-.empty {
-  padding: 44px 24px; text-align: center;
-  color: var(--ink-soft); background: #fff;
-  border: 1px dashed var(--line);
-}
-.empty strong { display: block; color: var(--ink); margin-bottom: 4px; font-size: 15px; }
-
-/* Forms */
-.field { margin-bottom: 14px; }
-label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 5px; }
-input, select {
-  font-family: 'Inter', sans-serif; font-size: 14px;
-  padding: 8px 10px; border: 1px solid var(--line);
-  border-radius: var(--radius); background: #fff;
-  color: var(--ink); width: 100%;
-}
-input:focus, select:focus {
-  outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold);
-}
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-.form-row .full { grid-column: 1 / -1; }
-
-/* Modal */
-.backdrop {
-  position: fixed; inset: 0;
-  background: rgba(17,25,46,0.55);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 50;
-}
-.modal {
-  background: #fff; width: 400px; max-width: 92vw;
-  border-radius: var(--radius); padding: 26px;
-  border-top: 4px solid var(--gold);
-}
-.modal h3 {
-  font-family: 'Source Serif 4', serif;
-  color: var(--navy); font-size: 18px; margin-bottom: 18px;
-}
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
-
-/* Login */
-.login-wrap {
-  min-height: 100vh; display: flex;
-  align-items: center; justify-content: center;
-  background: radial-gradient(circle at 18% 22%, rgba(184,146,62,0.12), transparent 48%), var(--navy-deep);
-  padding: 24px;
-}
-.login-card {
-  width: 360px; max-width: 100%;
-  background: var(--paper); border-radius: 4px;
-  padding: 38px 34px 30px;
-  box-shadow: 0 28px 56px rgba(0,0,0,0.38);
-}
-.login-mark {
-  width: 42px; height: 42px; border: 2px solid var(--navy);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-family: 'Source Serif 4', serif; font-weight: 700; font-size: 17px;
-  color: var(--navy); margin-bottom: 16px;
-}
-.login-card h1 {
-  font-family: 'Source Serif 4', serif;
-  font-size: 22px; color: var(--navy); margin-bottom: 3px;
-}
-.login-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; }
-.login-demo {
-  margin-top: 20px; padding-top: 16px;
-  border-top: 1px dashed var(--line);
-  font-size: 11.5px; color: var(--ink-soft); line-height: 1.75;
-}
-.login-demo code {
-  font-family: 'JetBrains Mono', monospace;
-  background: var(--paper-dim); padding: 1px 5px;
-  border-radius: 2px; font-size: 11px;
-}
-.spinner {
-  display: inline-block; width: 12px; height: 12px;
-  border: 2px solid rgba(255,255,255,0.35);
-  border-top-color: #fff; border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: -2px; margin-right: 7px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Responsive */
-@media (max-width: 720px) {
-  .shell { flex-direction: column; padding: 0 16px; }
-  .sidebar {
-    width: 100%; border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: 14px 0; display: flex; gap: 4px; overflow-x: auto;
-  }
-  .sidebar-label { display: none; }
-  .content { padding: 22px 0 40px; }
-  .form-row { grid-template-columns: 1fr; }
-  .topbar { padding: 14px 18px; }
-}
-</style>
-</head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-"use strict";
-
-const { useState, useEffect, useCallback } = React;
-
-const API = "http://localhost:3000/api";
-
-async function api(path, opts = {}) {
-  const headers = { "Content-Type": "application/json" };
-  if (opts.token) headers["Authorization"] = "Bearer " + opts.token;
-  const res = await fetch(API + path, {
-    method: opts.method || "GET",
-    headers,
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
-  });
-  let data = null;
-  try { data = await res.json(); } catch(_) {}
-  if (!res.ok) throw new Error((data && data.error) || "Eroare " + res.status);
-  return data;
-}
-
-const ROLE = { admin: "Administrator", professor: "Profesor", student: "Elev" };
-
-function gradeClass(v) {
-  const n = parseFloat(v);
-  if (n < 5) return "low";
-  if (n < 7) return "mid";
-  return "high";
-}
-
-/* ─── Login ─── */
-function Login({ onLogin }) {
-  const [email, setEmail] = useState("admin@scoala.ro");
-  const [pass, setPass]   = useState("");
-  const [err, setErr]     = useState("");
-  const [busy, setBusy]   = useState(false);
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setErr(""); setBusy(true);
-    try {
-      const d = await api("/auth/login", { method: "POST", body: { email, password: pass } });
-      onLogin(d.token, d.user);
-    } catch (ex) {
-      setErr(ex.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="login-wrap">
-      <form className="login-card" onSubmit={submit}>
-        <div className="login-mark">C</div>
-        <h1>Catalog Digital</h1>
-        <p className="login-sub">Autentificare în sistemul de management școlar</p>
-        {err && <div className="alert error">{err}</div>}
-        <div className="field">
-          <label>Adresă de e-mail</label>
-          <input type="email" value={email}
-            onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
-        </div>
-        <div className="field">
-          <label>Parolă</label>
-          <input type="password" value={pass}
-            onChange={(e) => setPass(e.target.value)} required autoComplete="current-password" />
-        </div>
-        <button className="btn" style={{ width: "100%" }} disabled={busy}>
-          {busy && <span className="spinner"/>}
-          {busy ? "Se verifică..." : "Intră în catalog"}
-        </button>
-        <div className="login-demo">
-          Conturi demo — parolă <code>Test1234!</code><br/>
-          <code>admin@scoala.ro</code> · <code>ionescu@scoala.ro</code><br/>
-          <code>ion.popescu@scoala.ro</code>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-/* ─── Grades ─── */
-function Grades({ token, user }) {
-  const [rows, setRows]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr]         = useState("");
-  const [modal, setModal]     = useState(false);
-  const [form, setForm]       = useState({ studentId:"", courseId:"", value:"", description:"" });
-  const [saving, setSaving]   = useState(false);
-
-  const canAdd    = user.role === "professor";
-  const canDelete = user.role === "admin";
-
-  const load = useCallback(async () => {
-    setLoading(true); setErr("");
-    try { setRows(await api("/grades", { token })); }
-    catch (ex) { setErr(ex.message); }
-    finally { setLoading(false); }
-  }, [token]);
-
-  useEffect(() => { load(); }, [load]);
-
-  const save = async (e) => {
-    e.preventDefault(); setSaving(true); setErr("");
-    try {
-      await api("/grades", { method:"POST", token, body:{
-        studentId: Number(form.studentId),
-        courseId:  Number(form.courseId),
-        value:     Number(form.value),
-        description: form.description || undefined,
-      }});
-      setModal(false);
-      setForm({ studentId:"", courseId:"", value:"", description:"" });
-      load();
-    } catch (ex) { setErr(ex.message); }
-    finally { setSaving(false); }
-  };
-
-  const del = async (id) => {
-    if (!confirm("Ștergi definitiv această notă?")) return;
-    try { await api("/grades/"+id, { method:"DELETE", token }); load(); }
-    catch (ex) { setErr(ex.message); }
-  };
-
-  const sub = { student:"Situația ta școlară curentă.", professor:"Notele acordate la cursurile tale.", admin:"Toate notele înregistrate în sistem." };
-
-  return (
-    <div>
-      <h1 className="page-title">Registrul de note</h1>
-      <p className="page-sub">{sub[user.role]}</p>
-      <div className="toolbar">
-        <span className="count-label">{rows.length} {rows.length === 1 ? "înregistrare" : "înregistrări"}</span>
-        {canAdd && <button className="btn" onClick={() => setModal(true)}>+ Adaugă notă</button>}
-      </div>
-      {err && <div className="alert error">{err}</div>}
-      {loading
-        ? <div className="alert info">Se încarcă registrul...</div>
-        : rows.length === 0
-          ? <div className="empty"><strong>Nicio notă înregistrată</strong>Nu există note vizibile pentru contul tău.</div>
-          : (
-            <table className="ledger">
-              <thead>
-                <tr>
-                  <th style={{width:52}}>Nr.</th>
-                  <th>Elev</th>
-                  <th>Curs</th>
-                  <th style={{width:70}}>Notă</th>
-                  <th>Descriere</th>
-                  <th style={{width:120}}>Data</th>
-                  {canDelete && <th style={{width:80}}></th>}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(g => (
-                  <tr key={g.id}>
-                    <td className="row-id">#{g.id}</td>
-                    <td>Elev #{g.student_id}</td>
-                    <td>Curs #{g.course_id}</td>
-                    <td><span className={"grade-val " + gradeClass(g.value)}>{g.value}</span></td>
-                    <td className="muted">{g.description || "—"}</td>
-                    <td className="row-id">{String(g.grade_date || g.created_at || "").slice(0,10)}</td>
-                    {canDelete && <td><button className="btn danger sm" onClick={() => del(g.id)}>Șterge</button></td>}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog — Sistem de Management Școlar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+    <style>
+      :root {
+        --navy: #1b2a4a;
+        --navy-deep: #11192e;
+        --paper: #f7f2e7;
+        --paper-dim: #efe7d6;
+        --ink: #20242e;
+        --ink-soft: #5b5f6b;
+        --gold: #b8923e;
+        --gold-soft: #dcc68e;
+        --line: #d8cdb2;
+        --green: #2e7d32;
+        --green-bg: #e7f2e8;
+        --red: #b3261e;
+        --red-bg: #fbe9e8;
+        --blue: #1565c0;
+        --blue-bg: #e3f0fb;
+        --radius: 3px;
       }
-      {modal && (
-        <div className="backdrop" onClick={() => setModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>Adaugă notă nouă</h3>
-            <form onSubmit={save}>
-              <div className="form-row">
-                <div className="field">
-                  <label>ID Elev</label>
-                  <input type="number" required value={form.studentId}
-                    onChange={e => setForm({...form, studentId:e.target.value})} />
-                </div>
-                <div className="field">
-                  <label>ID Curs</label>
-                  <input type="number" required value={form.courseId}
-                    onChange={e => setForm({...form, courseId:e.target.value})} />
-                </div>
-                <div className="field">
-                  <label>Notă (1–10)</label>
-                  <input type="number" min="1" max="10" step="0.5" required value={form.value}
-                    onChange={e => setForm({...form, value:e.target.value})} />
-                </div>
-                <div className="field">
-                  <label>Descriere (opțional)</label>
-                  <input type="text" value={form.description}
-                    onChange={e => setForm({...form, description:e.target.value})} />
-                </div>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      ::selection {
+        background: var(--gold-soft);
+      }
+      .app {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Topbar */
+      .topbar {
+        background: var(--navy);
+        color: var(--paper);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 3px solid var(--gold);
+        flex-shrink: 0;
+      }
+      .brand-title {
+        font-family: "Source Serif 4", serif;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .brand-sub {
+        font-size: 10.5px;
+        font-weight: 500;
+        color: var(--gold-soft);
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        margin-top: 3px;
+      }
+      .who {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .who-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .role-pill {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--gold);
+        color: var(--gold-soft);
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        color: rgba(247, 242, 231, 0.65);
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      .logout-btn:hover {
+        color: var(--paper);
+      }
+
+      /* Shell */
+      .shell {
+        flex: 1;
+        display: flex;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 196px;
+        flex-shrink: 0;
+        padding: 28px 0;
+        border-right: 1px solid var(--line);
+      }
+      .sidebar-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin: 0 0 10px 6px;
+      }
+      .nav-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        border-left: 3px solid transparent;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+        padding: 9px 12px;
+        margin-bottom: 2px;
+        border-radius: var(--radius);
+        cursor: pointer;
+      }
+      .nav-btn:hover {
+        background: var(--paper-dim);
+      }
+      .nav-btn.active {
+        border-left-color: var(--gold);
+        background: var(--paper-dim);
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      /* Content */
+      .content {
+        flex: 1;
+        padding: 30px 0 60px 32px;
+        min-width: 0;
+      }
+      .page-title {
+        font-family: "Source Serif 4", serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .page-sub {
+        font-size: 13.5px;
+        color: var(--ink-soft);
+        margin-bottom: 24px;
+      }
+
+      /* Toolbar */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .toolbar-left {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .count-label {
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+
+      /* Table */
+      .ledger {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+      .ledger thead th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--navy);
+        background: var(--paper-dim);
+        border-bottom: 2px solid var(--navy);
+      }
+      .ledger tbody td {
+        padding: 11px 14px;
+        font-size: 13.5px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .ledger tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .ledger tbody tr:hover {
+        background: #fcfaf5;
+      }
+      .row-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+      }
+      .grade-val {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .grade-val.low {
+        color: var(--red);
+      }
+      .grade-val.mid {
+        color: #9a7b17;
+      }
+      .grade-val.high {
+        color: var(--green);
+      }
+      .muted {
+        color: var(--ink-soft);
+      }
+      .actions-cell {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      /* Pills */
+      .pill {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 999px;
+      }
+      .pill.ok {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .pill.blocked {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .pill.neutral {
+        background: var(--paper-dim);
+        color: var(--navy);
+      }
+      .pill.blue {
+        background: var(--blue-bg);
+        color: var(--blue);
+      }
+
+      /* Buttons */
+      .btn {
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 8px 15px;
+        border-radius: var(--radius);
+        border: 1px solid var(--navy);
+        background: var(--navy);
+        color: var(--paper);
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn:hover:not(:disabled) {
+        background: var(--navy-deep);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--navy);
+      }
+      .btn.ghost:hover {
+        background: var(--paper-dim);
+      }
+      .btn.danger {
+        background: var(--red);
+        border-color: var(--red);
+      }
+      .btn.danger:hover:not(:disabled) {
+        background: #8e1f19;
+      }
+      .btn.success {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+      .btn.success:hover:not(:disabled) {
+        background: #1b5e20;
+      }
+      .btn.sm {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      /* Alerts */
+      .alert {
+        padding: 10px 14px;
+        border-radius: var(--radius);
+        font-size: 13.5px;
+        margin-bottom: 14px;
+      }
+      .alert.error {
+        background: var(--red-bg);
+        color: var(--red);
+        border: 1px solid #efc4c0;
+      }
+      .alert.info {
+        background: var(--paper-dim);
+        color: var(--ink-soft);
+        border: 1px solid var(--line);
+      }
+      .alert.success {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid #b7d9b8;
+      }
+
+      /* Empty state */
+      .empty {
+        padding: 44px 24px;
+        text-align: center;
+        color: var(--ink-soft);
+        background: #fff;
+        border: 1px dashed var(--line);
+      }
+      .empty strong {
+        display: block;
+        color: var(--ink);
+        margin-bottom: 6px;
+        font-size: 15px;
+      }
+
+      /* Forms */
+      .field {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      textarea {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        color: var(--ink);
+        width: 100%;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid var(--gold);
+        outline-offset: 1px;
+        border-color: var(--gold);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 14px;
+      }
+      .form-row .full {
+        grid-column: 1 / -1;
+      }
+      .form-3col {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0 14px;
+      }
+
+      /* Modal */
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 25, 46, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 20px;
+      }
+      .modal {
+        background: #fff;
+        width: 520px;
+        max-width: 100%;
+        border-radius: var(--radius);
+        padding: 28px;
+        border-top: 4px solid var(--gold);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal h3 {
+        font-family: "Source Serif 4", serif;
+        color: var(--navy);
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .modal-section {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--ink-soft);
+        margin: 18px 0 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      /* Login */
+      .login-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(
+            circle at 18% 22%,
+            rgba(184, 146, 62, 0.12),
+            transparent 48%
+          ),
+          var(--navy-deep);
+        padding: 24px;
+      }
+      .login-card {
+        width: 360px;
+        max-width: 100%;
+        background: var(--paper);
+        border-radius: 4px;
+        padding: 38px 34px 30px;
+        box-shadow: 0 28px 56px rgba(0, 0, 0, 0.38);
+      }
+      .login-mark {
+        width: 42px;
+        height: 42px;
+        border: 2px solid var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Source Serif 4", serif;
+        font-weight: 700;
+        font-size: 17px;
+        color: var(--navy);
+        margin-bottom: 16px;
+      }
+      .login-card h1 {
+        font-family: "Source Serif 4", serif;
+        font-size: 22px;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .login-sub {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-bottom: 24px;
+      }
+      .login-demo {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px dashed var(--line);
+        font-size: 11.5px;
+        color: var(--ink-soft);
+        line-height: 1.75;
+      }
+      .login-demo code {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--paper-dim);
+        padding: 1px 5px;
+        border-radius: 2px;
+        font-size: 11px;
+      }
+      .spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: -2px;
+        margin-right: 7px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Confirm dialog */
+      .confirm-box {
+        background: var(--red-bg);
+        border: 1px solid #efc4c0;
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        margin-bottom: 16px;
+      }
+      .confirm-box p {
+        font-size: 13.5px;
+        color: var(--red);
+        margin-bottom: 10px;
+      }
+      .confirm-box .confirm-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Tabs in page */
+      .tab-bar {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 18px;
+        border-bottom: 2px solid var(--line);
+      }
+      .tab-btn {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        padding: 8px 16px;
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+      .tab-btn.active {
+        border-bottom-color: var(--gold);
+        color: var(--navy);
+        font-weight: 700;
+      }
+      .tab-btn:hover:not(.active) {
+        color: var(--ink);
+      }
+
+      /* Info card */
+      .info-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 14px;
+      }
+      .info-card-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--ink-soft);
+        margin-bottom: 10px;
+      }
+      .info-row {
+        display: flex;
+        gap: 8px;
+        font-size: 13.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        color: var(--ink-soft);
+        min-width: 110px;
+      }
+      .info-value {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          flex-direction: column;
+          padding: 0 16px;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+          padding: 14px 0;
+          display: flex;
+          gap: 4px;
+          overflow-x: auto;
+        }
+        .sidebar-label {
+          display: none;
+        }
+        .content {
+          padding: 22px 0 40px;
+        }
+        .form-row,
+        .form-3col {
+          grid-template-columns: 1fr;
+        }
+        .topbar {
+          padding: 14px 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      "use strict";
+
+      const { useState, useEffect, useCallback } = React;
+      const API = "http://localhost:3000/api";
+
+      async function api(path, opts = {}) {
+        const headers = { "Content-Type": "application/json" };
+        if (opts.token) headers["Authorization"] = "Bearer " + opts.token;
+        const res = await fetch(API + path, {
+          method: opts.method || "GET",
+          headers,
+          body: opts.body ? JSON.stringify(opts.body) : undefined,
+        });
+        let data = null;
+        try {
+          data = await res.json();
+        } catch (_) {}
+        if (!res.ok)
+          throw new Error((data && data.error) || "Eroare " + res.status);
+        return data;
+      }
+
+      const ROLE_LABEL = {
+        admin: "Administrator",
+        professor: "Profesor",
+        student: "Elev",
+      };
+      const ROLE_OPTIONS = ["admin", "professor", "student"];
+
+      function gradeClass(v) {
+        const n = parseFloat(v);
+        if (n < 5) return "low";
+        if (n < 7) return "mid";
+        return "high";
+      }
+
+      /* 
+   LOGIN
+*/
+      function Login({ onLogin }) {
+        const [email, setEmail] = useState("admin@scoala.ro");
+        const [pass, setPass] = useState("");
+        const [err, setErr] = useState("");
+        const [busy, setBusy] = useState(false);
+
+        const submit = async (e) => {
+          e.preventDefault();
+          setErr("");
+          setBusy(true);
+          try {
+            const d = await api("/auth/login", {
+              method: "POST",
+              body: { email, password: pass },
+            });
+            onLogin(d.token, d.user);
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setBusy(false);
+          }
+        };
+
+        return (
+          <div className="login-wrap">
+            <form className="login-card" onSubmit={submit}>
+              <div className="login-mark">C</div>
+              <h1>Catalog Digital</h1>
+              <p className="login-sub">
+                Autentificare în sistemul de management școlar
+              </p>
+              {err && <div className="alert error">{err}</div>}
+              <div className="field">
+                <label>Adresă de e-mail</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="username"
+                />
               </div>
-              <div className="modal-actions">
-                <button type="button" className="btn ghost" onClick={() => setModal(false)}>Anulează</button>
-                <button type="submit" className="btn" disabled={saving}>
-                  {saving ? "Se salvează..." : "Salvează"}
-                </button>
+              <div className="field">
+                <label>Parolă</label>
+                <input
+                  type="password"
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+              <button className="btn" style={{ width: "100%" }} disabled={busy}>
+                {busy && <span className="spinner" />}
+                {busy ? "Se verifică..." : "Intră în catalog"}
+              </button>
+              <div className="login-demo">
+                Conturi demo — parolă <code>Test1234!</code>
+                <br />
+                <code>admin@scoala.ro</code> · <code>ionescu@scoala.ro</code> ·{" "}
+                <code>ion.popescu@scoala.ro</code>
               </div>
             </form>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── Students ─── */
-function Students({ token }) {
-  const [rows, setRows]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr]         = useState("");
-
-  useEffect(() => {
-    (async () => {
-      try { setRows(await api("/students", { token })); }
-      catch (ex) { setErr(ex.message); }
-      finally { setLoading(false); }
-    })();
-  }, [token]);
-
-  return (
-    <div>
-      <h1 className="page-title">Elevi înregistrați</h1>
-      <p className="page-sub">Lista completă a profilurilor de elev din sistem.</p>
-      {err && <div className="alert error">{err}</div>}
-      {loading
-        ? <div className="alert info">Se încarcă...</div>
-        : rows.length === 0
-          ? <div className="empty"><strong>Niciun elev găsit</strong></div>
-          : (
-            <table className="ledger">
-              <thead>
-                <tr>
-                  <th style={{width:52}}>Nr.</th>
-                  <th>Nume</th>
-                  <th>Clasă</th>
-                  <th>An</th>
-                  <th>Părinte / tutore</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(s => (
-                  <tr key={s.id}>
-                    <td className="row-id">#{s.id}</td>
-                    <td>{s.first_name} {s.last_name}</td>
-                    <td>{s.class_name}</td>
-                    <td>{s.year}</td>
-                    <td className="muted">{s.parent_name || "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )
+        );
       }
-    </div>
-  );
-}
 
-/* ─── Users ─── */
-function Users({ token }) {
-  const [rows, setRows]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr]         = useState("");
+      /* 
+   GRADES
+*/
+      function Grades({ token, user }) {
+        const [rows, setRows] = useState([]);
+        const [students, setStudents] = useState([]);
+        const [courses, setCourses] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [err, setErr] = useState("");
+        const [success, setSuccess] = useState("");
+        const [modal, setModal] = useState(false);
+        const [editRow, setEditRow] = useState(null);
+        const [form, setForm] = useState({
+          studentId: "",
+          courseId: "",
+          value: "",
+          description: "",
+        });
+        const [saving, setSaving] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try { setRows(await api("/users", { token })); }
-    catch (ex) { setErr(ex.message); }
-    finally { setLoading(false); }
-  }, [token]);
+        const isAdmin = user.role === "admin";
+        const isProf = user.role === "professor";
 
-  useEffect(() => { load(); }, [load]);
+        const load = useCallback(async () => {
+          setLoading(true);
+          setErr("");
+          try {
+            setRows(await api("/grades", { token }));
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setLoading(false);
+          }
+        }, [token]);
 
-  const deactivate = async (id) => {
-    if (!confirm("Dezactivezi acest cont?")) return;
-    try { await api("/users/"+id, { method:"DELETE", token }); load(); }
-    catch (ex) { setErr(ex.message); }
-  };
+        useEffect(() => {
+          load();
+        }, [load]);
 
-  return (
-    <div>
-      <h1 className="page-title">Utilizatori</h1>
-      <p className="page-sub">Administrarea conturilor înregistrate în sistem.</p>
-      {err && <div className="alert error">{err}</div>}
-      {loading
-        ? <div className="alert info">Se încarcă...</div>
-        : (
-          <table className="ledger">
-            <thead>
-              <tr>
-                <th style={{width:52}}>Nr.</th>
-                <th>Nume</th>
-                <th>E-mail</th>
-                <th>Rol</th>
-                <th>Status</th>
-                <th style={{width:100}}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(u => (
-                <tr key={u.id}>
-                  <td className="row-id">#{u.id}</td>
-                  <td>{u.first_name} {u.last_name}</td>
-                  <td className="muted">{u.email}</td>
-                  <td><span className="pill neutral">{ROLE[u.role]}</span></td>
-                  <td>
-                    <span className={"pill " + (u.is_active ? "ok" : "blocked")}>
-                      {u.is_active ? "Activ" : "Inactiv"}
+        const openAddModal = async () => {
+          setErr("");
+          setSuccess("");
+          try {
+            const [s, c] = await Promise.all([
+              api("/students", { token }),
+              api("/courses", { token }),
+            ]);
+            setStudents(s);
+            setCourses(c);
+            setForm({
+              studentId: "",
+              courseId: "",
+              value: "",
+              description: "",
+            });
+            setEditRow(null);
+            setModal(true);
+          } catch (ex) {
+            setErr(ex.message);
+          }
+        };
+
+        const openEditModal = (g) => {
+          setEditRow(g);
+          setForm({ value: String(g.value), description: g.description || "" });
+          setModal(true);
+        };
+
+        const closeModal = () => {
+          setModal(false);
+          setEditRow(null);
+        };
+
+        const save = async (e) => {
+          e.preventDefault();
+          setSaving(true);
+          setErr("");
+          try {
+            if (editRow) {
+              await api("/grades/" + editRow.id, {
+                method: "PUT",
+                token,
+                body: {
+                  value: Number(form.value),
+                  description: form.description || undefined,
+                },
+              });
+              setSuccess("Nota a fost actualizată.");
+            } else {
+              await api("/grades", {
+                method: "POST",
+                token,
+                body: {
+                  studentId: Number(form.studentId),
+                  courseId: Number(form.courseId),
+                  value: Number(form.value),
+                  description: form.description || undefined,
+                },
+              });
+              setSuccess("Nota a fost adăugată.");
+            }
+            closeModal();
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setSaving(false);
+          }
+        };
+
+        const del = async (id) => {
+          if (!confirm("Ștergi definitiv această notă?")) return;
+          try {
+            await api("/grades/" + id, { method: "DELETE", token });
+            setSuccess("Nota a fost ștearsă.");
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          }
+        };
+
+        const sub = {
+          student: "Situația ta școlară curentă.",
+          professor: "Notele acordate la cursurile tale.",
+          admin: "Toate notele înregistrate în sistem.",
+        };
+        const showActions = isAdmin || isProf;
+
+        return (
+          <div>
+            <h1 className="page-title">Registrul de note</h1>
+            <p className="page-sub">{sub[user.role]}</p>
+            <div className="toolbar">
+              <div className="toolbar-left">
+                <span className="count-label">
+                  {rows.length}{" "}
+                  {rows.length === 1 ? "înregistrare" : "înregistrări"}
+                </span>
+              </div>
+              {isProf && (
+                <button className="btn" onClick={openAddModal}>
+                  + Adaugă notă
+                </button>
+              )}
+            </div>
+            {err && <div className="alert error">{err}</div>}
+            {success && <div className="alert success">{success}</div>}
+            {loading ? (
+              <div className="alert info">Se încarcă registrul...</div>
+            ) : rows.length === 0 ? (
+              <div className="empty">
+                <strong>Nicio notă înregistrată</strong>Nu există note vizibile
+                pentru contul tău.
+              </div>
+            ) : (
+              <table className="ledger">
+                <thead>
+                  <tr>
+                    <th style={{ width: 52 }}>Nr.</th>
+                    <th>ID Elev</th>
+                    <th>ID Curs</th>
+                    <th style={{ width: 70 }}>Notă</th>
+                    <th>Descriere</th>
+                    <th style={{ width: 110 }}>Data</th>
+                    {showActions && <th style={{ width: 160 }}></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((g) => (
+                    <tr key={g.id}>
+                      <td className="row-id">#{g.id}</td>
+                      <td className="row-id">#{g.student_id}</td>
+                      <td className="row-id">#{g.course_id}</td>
+                      <td>
+                        <span className={"grade-val " + gradeClass(g.value)}>
+                          {parseFloat(g.value).toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="muted">{g.description || "—"}</td>
+                      <td className="row-id">
+                        {String(g.grade_date || g.created_at || "").slice(
+                          0,
+                          10,
+                        )}
+                      </td>
+                      {showActions && (
+                        <td>
+                          <div className="actions-cell">
+                            {(isAdmin ||
+                              (isProf && g.professor_id === user.id)) && (
+                              <button
+                                className="btn sm ghost"
+                                onClick={() => openEditModal(g)}
+                              >
+                                Editează
+                              </button>
+                            )}
+                            {isAdmin && (
+                              <button
+                                className="btn sm danger"
+                                onClick={() => del(g.id)}
+                              >
+                                Șterge
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {modal && (
+              <div className="backdrop" onClick={closeModal}>
+                <div className="modal" onClick={(e) => e.stopPropagation()}>
+                  <h3>{editRow ? "Editează nota" : "Adaugă notă nouă"}</h3>
+                  {err && <div className="alert error">{err}</div>}
+                  <form onSubmit={save}>
+                    {!editRow && (
+                      <>
+                        <div className="field">
+                          <label>Elev *</label>
+                          <select
+                            required
+                            value={form.studentId}
+                            onChange={(e) =>
+                              setForm({ ...form, studentId: e.target.value })
+                            }
+                          >
+                            <option value="">— selectează elevul —</option>
+                            {students.map((s) => (
+                              <option key={s.id} value={s.user_id}>
+                                {s.last_name} {s.first_name} — {s.class_name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="field">
+                          <label>Curs *</label>
+                          <select
+                            required
+                            value={form.courseId}
+                            onChange={(e) =>
+                              setForm({ ...form, courseId: e.target.value })
+                            }
+                          >
+                            <option value="">— selectează cursul —</option>
+                            {courses.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name} (sem. {c.semester} / {c.year})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </>
+                    )}
+                    <div className="form-row">
+                      <div className="field">
+                        <label>Notă (1–10) *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          step="0.25"
+                          required
+                          value={form.value}
+                          onChange={(e) =>
+                            setForm({ ...form, value: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>Descriere (opțional)</label>
+                        <input
+                          type="text"
+                          value={form.description}
+                          onChange={(e) =>
+                            setForm({ ...form, description: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="modal-actions">
+                      <button
+                        type="button"
+                        className="btn ghost"
+                        onClick={closeModal}
+                      >
+                        Anulează
+                      </button>
+                      <button type="submit" className="btn" disabled={saving}>
+                        {saving ? "Se salvează..." : "Salvează"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      /* 
+   STUDENTS
+*/
+      function Students({ token, user }) {
+        const [rows, setRows] = useState([]);
+        const [users, setUsers] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [err, setErr] = useState("");
+        const [success, setSuccess] = useState("");
+        const [modal, setModal] = useState(false);
+        const [editRow, setEditRow] = useState(null);
+        const [form, setForm] = useState({
+          userId: "",
+          className: "",
+          year: new Date().getFullYear(),
+          parentName: "",
+          parentPhone: "",
+          birthDate: "",
+        });
+        const [saving, setSaving] = useState(false);
+        const isAdmin = user.role === "admin";
+
+        const load = useCallback(async () => {
+          setLoading(true);
+          setErr("");
+          try {
+            setRows(await api("/students", { token }));
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setLoading(false);
+          }
+        }, [token]);
+
+        useEffect(() => {
+          load();
+        }, [load]);
+
+        const openAdd = async () => {
+          setErr("");
+          setSuccess("");
+          try {
+            const all = await api("/users", { token });
+            // Utilizatori cu rol student care nu au inca profil
+            const profileUserIds = rows.map((r) => r.user_id);
+            setUsers(
+              all.filter(
+                (u) => u.role === "student" && !profileUserIds.includes(u.id),
+              ),
+            );
+            setEditRow(null);
+            setForm({
+              userId: "",
+              className: "",
+              year: new Date().getFullYear(),
+              parentName: "",
+              parentPhone: "",
+              birthDate: "",
+            });
+            setModal(true);
+          } catch (ex) {
+            setErr(ex.message);
+          }
+        };
+
+        const openEdit = (s) => {
+          setEditRow(s);
+          setForm({
+            userId: s.user_id,
+            className: s.class_name,
+            year: s.year,
+            parentName: s.parent_name || "",
+            parentPhone: s.parent_phone || "",
+            birthDate: s.birth_date ? s.birth_date.slice(0, 10) : "",
+          });
+          setModal(true);
+        };
+
+        const closeModal = () => {
+          setModal(false);
+          setEditRow(null);
+        };
+
+        const save = async (e) => {
+          e.preventDefault();
+          setSaving(true);
+          setErr("");
+          try {
+            if (editRow) {
+              await api("/students/" + editRow.id, {
+                method: "PUT",
+                token,
+                body: {
+                  className: form.className,
+                  year: Number(form.year),
+                  parentName: form.parentName || undefined,
+                  parentPhone: form.parentPhone || undefined,
+                  birthDate: form.birthDate || undefined,
+                },
+              });
+              setSuccess("Profilul elevului a fost actualizat.");
+            } else {
+              await api("/students", {
+                method: "POST",
+                token,
+                body: {
+                  userId: Number(form.userId),
+                  className: form.className,
+                  year: Number(form.year),
+                  parentName: form.parentName || undefined,
+                  parentPhone: form.parentPhone || undefined,
+                  birthDate: form.birthDate || undefined,
+                },
+              });
+              setSuccess("Profil de elev creat cu succes.");
+            }
+            closeModal();
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setSaving(false);
+          }
+        };
+
+        return (
+          <div>
+            <h1 className="page-title">Elevi înregistrați</h1>
+            <p className="page-sub">Profilurile de elev din sistem.</p>
+            <div className="toolbar">
+              <span className="count-label">
+                {rows.length} {rows.length === 1 ? "elev" : "elevi"}
+              </span>
+              {isAdmin && (
+                <button className="btn" onClick={openAdd}>
+                  + Adaugă profil elev
+                </button>
+              )}
+            </div>
+            {err && <div className="alert error">{err}</div>}
+            {success && <div className="alert success">{success}</div>}
+            {loading ? (
+              <div className="alert info">Se încarcă...</div>
+            ) : rows.length === 0 ? (
+              <div className="empty">
+                <strong>Niciun profil de elev</strong>
+                Utilizatorii cu rol „Elev" există, dar nu au profil creat. Apasă
+                „+ Adaugă profil elev".
+              </div>
+            ) : (
+              <table className="ledger">
+                <thead>
+                  <tr>
+                    <th style={{ width: 52 }}>Nr.</th>
+                    <th>Nume</th>
+                    <th>Email</th>
+                    <th>Clasă</th>
+                    <th>An</th>
+                    <th>Părinte</th>
+                    <th>Telefon</th>
+                    {isAdmin && <th style={{ width: 100 }}></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((s) => (
+                    <tr key={s.id}>
+                      <td className="row-id">#{s.id}</td>
+                      <td>
+                        <strong>
+                          {s.last_name} {s.first_name}
+                        </strong>
+                      </td>
+                      <td className="muted">{s.email}</td>
+                      <td>{s.class_name}</td>
+                      <td>{s.year}</td>
+                      <td className="muted">{s.parent_name || "—"}</td>
+                      <td className="muted">{s.parent_phone || "—"}</td>
+                      {isAdmin && (
+                        <td>
+                          <button
+                            className="btn sm ghost"
+                            onClick={() => openEdit(s)}
+                          >
+                            Editează
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {modal && (
+              <div className="backdrop" onClick={closeModal}>
+                <div className="modal" onClick={(e) => e.stopPropagation()}>
+                  <h3>
+                    {editRow
+                      ? `Editează profil — ${editRow.last_name} ${editRow.first_name}`
+                      : "Adaugă profil elev"}
+                  </h3>
+                  {err && <div className="alert error">{err}</div>}
+                  <form onSubmit={save}>
+                    {!editRow && (
+                      <div className="field">
+                        <label>Utilizator (cont student) *</label>
+                        <select
+                          required
+                          value={form.userId}
+                          onChange={(e) =>
+                            setForm({ ...form, userId: e.target.value })
+                          }
+                        >
+                          <option value="">— selectează utilizatorul —</option>
+                          {users.map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.last_name} {u.first_name} ({u.email})
+                            </option>
+                          ))}
+                        </select>
+                        {users.length === 0 && (
+                          <p
+                            style={{
+                              fontSize: 12,
+                              color: "var(--ink-soft)",
+                              marginTop: 5,
+                            }}
+                          >
+                            Toți utilizatorii cu rol Elev au deja profil creat.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <div className="form-row">
+                      <div className="field">
+                        <label>Clasă *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="ex: 10A"
+                          value={form.className}
+                          onChange={(e) =>
+                            setForm({ ...form, className: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>An școlar *</label>
+                        <input
+                          type="number"
+                          required
+                          value={form.year}
+                          onChange={(e) =>
+                            setForm({ ...form, year: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="modal-section">Informații opționale</div>
+                    <div className="form-row">
+                      <div className="field">
+                        <label>Nume părinte / tutore</label>
+                        <input
+                          type="text"
+                          value={form.parentName}
+                          onChange={(e) =>
+                            setForm({ ...form, parentName: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>Telefon părinte</label>
+                        <input
+                          type="text"
+                          value={form.parentPhone}
+                          onChange={(e) =>
+                            setForm({ ...form, parentPhone: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="field">
+                      <label>Data nașterii</label>
+                      <input
+                        type="date"
+                        value={form.birthDate}
+                        onChange={(e) =>
+                          setForm({ ...form, birthDate: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="modal-actions">
+                      <button
+                        type="button"
+                        className="btn ghost"
+                        onClick={closeModal}
+                      >
+                        Anulează
+                      </button>
+                      <button type="submit" className="btn" disabled={saving}>
+                        {saving ? "Se salvează..." : "Salvează"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      /* 
+   USERS
+*/
+      function Users({ token, user: currentUser }) {
+        const [rows, setRows] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [err, setErr] = useState("");
+        const [success, setSuccess] = useState("");
+        const [filter, setFilter] = useState("all");
+        const [modal, setModal] = useState(false); // "edit" | "create" | null
+        const [editRow, setEditRow] = useState(null);
+        const [form, setForm] = useState({
+          firstName: "",
+          lastName: "",
+          email: "",
+          role: "student",
+          password: "",
+        });
+        const [saving, setSaving] = useState(false);
+        const [confirmId, setConfirmId] = useState(null); // id for deactivate confirm
+
+        const load = useCallback(async () => {
+          setLoading(true);
+          setErr("");
+          try {
+            setRows(await api("/users", { token }));
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setLoading(false);
+          }
+        }, [token]);
+
+        useEffect(() => {
+          load();
+        }, [load]);
+
+        const filtered =
+          filter === "all"
+            ? rows
+            : filter === "active"
+              ? rows.filter((u) => u.is_active)
+              : filter === "inactive"
+                ? rows.filter((u) => !u.is_active)
+                : rows.filter((u) => u.role === filter);
+
+        const openCreate = () => {
+          setErr("");
+          setSuccess("");
+          setEditRow(null);
+          setForm({
+            firstName: "",
+            lastName: "",
+            email: "",
+            role: "student",
+            password: "",
+          });
+          setModal("create");
+        };
+
+        const openEdit = (u) => {
+          setErr("");
+          setSuccess("");
+          setEditRow(u);
+          setForm({
+            firstName: u.first_name,
+            lastName: u.last_name,
+            email: u.email,
+            role: u.role,
+            password: "",
+          });
+          setModal("edit");
+        };
+
+        const closeModal = () => {
+          setModal(false);
+          setEditRow(null);
+        };
+
+        const save = async (e) => {
+          e.preventDefault();
+          setSaving(true);
+          setErr("");
+          try {
+            if (modal === "create") {
+              await api("/auth/register", {
+                method: "POST",
+                token,
+                body: {
+                  email: form.email,
+                  password: form.password,
+                  firstName: form.firstName,
+                  lastName: form.lastName,
+                  role: form.role,
+                },
+              });
+              setSuccess(
+                `Contul pentru ${form.firstName} ${form.lastName} a fost creat.`,
+              );
+            } else {
+              await api("/users/" + editRow.id, {
+                method: "PUT",
+                token,
+                body: {
+                  firstName: form.firstName,
+                  lastName: form.lastName,
+                  email: form.email,
+                  role: form.role,
+                },
+              });
+              setSuccess("Datele utilizatorului au fost actualizate.");
+            }
+            closeModal();
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setSaving(false);
+          }
+        };
+
+        const deactivate = async (id) => {
+          try {
+            await api("/users/" + id, { method: "DELETE", token });
+            setSuccess("Contul a fost dezactivat.");
+            setConfirmId(null);
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          }
+        };
+
+        const activate = async (id) => {
+          try {
+            await api("/users/" + id + "/activate", { method: "PATCH", token });
+            setSuccess("Contul a fost reactivat.");
+            load();
+          } catch (ex) {
+            setErr(ex.message);
+          }
+        };
+
+        return (
+          <div>
+            <h1 className="page-title">Utilizatori</h1>
+            <p className="page-sub">
+              Gestionarea conturilor înregistrate în sistem.
+            </p>
+            <div className="toolbar">
+              <div className="toolbar-left">
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  style={{ width: 180 }}
+                >
+                  <option value="all">Toți utilizatorii</option>
+                  <option value="active">Activi</option>
+                  <option value="inactive">Inactivi</option>
+                  <option value="admin">Administratori</option>
+                  <option value="professor">Profesori</option>
+                  <option value="student">Elevi</option>
+                </select>
+                <span className="count-label">
+                  {filtered.length}{" "}
+                  {filtered.length === 1 ? "utilizator" : "utilizatori"}
+                </span>
+              </div>
+              <button className="btn" onClick={openCreate}>
+                + Cont nou
+              </button>
+            </div>
+            {err && <div className="alert error">{err}</div>}
+            {success && <div className="alert success">{success}</div>}
+            {loading ? (
+              <div className="alert info">Se încarcă...</div>
+            ) : (
+              <table className="ledger">
+                <thead>
+                  <tr>
+                    <th style={{ width: 52 }}>Nr.</th>
+                    <th>Nume</th>
+                    <th>E-mail</th>
+                    <th>Rol</th>
+                    <th>Status</th>
+                    <th>Creat la</th>
+                    <th style={{ width: 200 }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((u) => (
+                    <tr key={u.id} style={{ opacity: u.is_active ? 1 : 0.6 }}>
+                      <td className="row-id">#{u.id}</td>
+                      <td>
+                        <strong>
+                          {u.last_name} {u.first_name}
+                        </strong>
+                      </td>
+                      <td className="muted">{u.email}</td>
+                      <td>
+                        <span className="pill neutral">
+                          {ROLE_LABEL[u.role]}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={"pill " + (u.is_active ? "ok" : "blocked")}
+                        >
+                          {u.is_active ? "Activ" : "Inactiv"}
+                        </span>
+                      </td>
+                      <td className="row-id">
+                        {String(u.created_at || "").slice(0, 10)}
+                      </td>
+                      <td>
+                        {confirmId === u.id ? (
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <button
+                              className="btn sm danger"
+                              onClick={() => deactivate(u.id)}
+                            >
+                              Confirmi?
+                            </button>
+                            <button
+                              className="btn sm ghost"
+                              onClick={() => setConfirmId(null)}
+                            >
+                              Anulează
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="actions-cell">
+                            <button
+                              className="btn sm ghost"
+                              onClick={() => openEdit(u)}
+                            >
+                              Editează
+                            </button>
+                            {u.is_active ? (
+                              u.id !== currentUser.id && (
+                                <button
+                                  className="btn sm danger"
+                                  onClick={() => setConfirmId(u.id)}
+                                >
+                                  Dezactivează
+                                </button>
+                              )
+                            ) : (
+                              <button
+                                className="btn sm success"
+                                onClick={() => activate(u.id)}
+                              >
+                                Reactivează
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {modal && (
+              <div className="backdrop" onClick={closeModal}>
+                <div className="modal" onClick={(e) => e.stopPropagation()}>
+                  <h3>
+                    {modal === "create"
+                      ? "Creează cont nou"
+                      : `Editează — ${editRow?.first_name} ${editRow?.last_name}`}
+                  </h3>
+                  {err && <div className="alert error">{err}</div>}
+                  <form onSubmit={save}>
+                    <div className="form-row">
+                      <div className="field">
+                        <label>Prenume *</label>
+                        <input
+                          required
+                          value={form.firstName}
+                          onChange={(e) =>
+                            setForm({ ...form, firstName: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>Nume *</label>
+                        <input
+                          required
+                          value={form.lastName}
+                          onChange={(e) =>
+                            setForm({ ...form, lastName: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="field">
+                      <label>Adresă e-mail *</label>
+                      <input
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={(e) =>
+                          setForm({ ...form, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Rol *</label>
+                      <select
+                        value={form.role}
+                        onChange={(e) =>
+                          setForm({ ...form, role: e.target.value })
+                        }
+                      >
+                        {ROLE_OPTIONS.map((r) => (
+                          <option key={r} value={r}>
+                            {ROLE_LABEL[r]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {modal === "create" && (
+                      <div className="field">
+                        <label>Parolă *</label>
+                        <input
+                          type="password"
+                          required
+                          minLength={8}
+                          value={form.password}
+                          onChange={(e) =>
+                            setForm({ ...form, password: e.target.value })
+                          }
+                          placeholder="Minim 8 caractere"
+                        />
+                      </div>
+                    )}
+                    {modal === "edit" && (
+                      <div className="alert info" style={{ marginTop: 8 }}>
+                        Parola nu se poate schimba din acest ecran. Lăsați
+                        câmpul gol pentru a o păstra.
+                      </div>
+                    )}
+                    <div className="modal-actions">
+                      <button
+                        type="button"
+                        className="btn ghost"
+                        onClick={closeModal}
+                      >
+                        Anulează
+                      </button>
+                      <button type="submit" className="btn" disabled={saving}>
+                        {saving ? "Se salvează..." : "Salvează"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      /*
+   AUDIT
+*/
+      function Audit({ token }) {
+        const [rows, setRows] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [err, setErr] = useState("");
+        const [filterStatus, setFilterStatus] = useState("");
+        const [filterType, setFilterType] = useState("");
+
+        const load = useCallback(async () => {
+          setLoading(true);
+          setErr("");
+          try {
+            const params = [];
+            if (filterStatus) params.push("status=" + filterStatus);
+            if (filterType) params.push("resourceType=" + filterType);
+            const qs = params.length ? "?" + params.join("&") : "";
+            setRows(await api("/audit" + qs, { token }));
+          } catch (ex) {
+            setErr(ex.message);
+          } finally {
+            setLoading(false);
+          }
+        }, [token, filterStatus, filterType]);
+
+        useEffect(() => {
+          load();
+        }, [load]);
+
+        const actionColor = (a) => {
+          if (a === "DELETE") return "var(--red)";
+          if (a === "CREATE") return "var(--green)";
+          if (a === "UPDATE") return "var(--blue)";
+          return "var(--ink-soft)";
+        };
+
+        return (
+          <div>
+            <h1 className="page-title">Jurnal de audit</h1>
+            <p className="page-sub">
+              Istoricul acțiunilor efectuate asupra resurselor sensibile.
+            </p>
+            <div className="toolbar">
+              <div className="toolbar-left">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  style={{ width: 190 }}
+                >
+                  <option value="">Toate statusurile</option>
+                  <option value="SUCCESS">Doar reușite</option>
+                  <option value="FORBIDDEN">Doar blocate</option>
+                </select>
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  style={{ width: 160 }}
+                >
+                  <option value="">Toate resursele</option>
+                  <option value="Grade">Note</option>
+                  <option value="Student">Elevi</option>
+                  <option value="User">Utilizatori</option>
+                </select>
+              </div>
+              <span className="count-label">{rows.length} înregistrări</span>
+            </div>
+            {err && <div className="alert error">{err}</div>}
+            {loading ? (
+              <div className="alert info">Se încarcă jurnalul...</div>
+            ) : rows.length === 0 ? (
+              <div className="empty">
+                <strong>Niciun eveniment înregistrat</strong>Încearcă să schimbi
+                filtrele.
+              </div>
+            ) : (
+              <table className="ledger">
+                <thead>
+                  <tr>
+                    <th>Utilizator</th>
+                    <th>Acțiune</th>
+                    <th>Resursă</th>
+                    <th>Status</th>
+                    <th>IP</th>
+                    <th>Data / ora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((l) => (
+                    <tr key={l.id}>
+                      <td>
+                        <span className="row-id">#{l.user_id}</span>
+                        <span className="muted"> {l.user_role}</span>
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            fontFamily: "'JetBrains Mono',monospace",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: actionColor(l.action),
+                          }}
+                        >
+                          {l.action}
+                        </span>
+                      </td>
+                      <td>
+                        {l.resource_type}
+                        {l.resource_id ? (
+                          <span className="row-id"> #{l.resource_id}</span>
+                        ) : (
+                          ""
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={
+                            "pill " +
+                            (l.status === "SUCCESS" ? "ok" : "blocked")
+                          }
+                        >
+                          {l.status === "SUCCESS" ? "Reușit" : "Blocat"}
+                        </span>
+                      </td>
+                      <td className="row-id">{l.ip_address || "—"}</td>
+                      <td className="row-id">
+                        {String(l.created_at || "")
+                          .slice(0, 19)
+                          .replace("T", " ")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        );
+      }
+
+      /* 
+   MY PROFILE (student view)
+*/
+      function MyProfile({ token, user }) {
+        const [profile, setProfile] = useState(null);
+        const [loading, setLoading] = useState(true);
+        const [err, setErr] = useState("");
+
+        useEffect(() => {
+          (async () => {
+            try {
+              const me = await api("/auth/me", { token });
+              setProfile(me);
+            } catch (ex) {
+              setErr(ex.message);
+            } finally {
+              setLoading(false);
+            }
+          })();
+        }, [token]);
+
+        if (loading)
+          return <div className="alert info">Se încarcă profilul...</div>;
+
+        const name =
+          (profile?.first_name || "") + " " + (profile?.last_name || "");
+
+        return (
+          <div>
+            <h1 className="page-title">Profilul meu</h1>
+            <p className="page-sub">Datele contului tău.</p>
+            {err && <div className="alert error">{err}</div>}
+            {profile && (
+              <div className="info-card">
+                <div className="info-card-title">Informații cont</div>
+                <div className="info-row">
+                  <span className="info-label">Nume complet</span>
+                  <span className="info-value">{name.trim()}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Email</span>
+                  <span className="info-value">{profile.email}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Rol</span>
+                  <span className="info-value">
+                    <span className="pill neutral">
+                      {ROLE_LABEL[profile.role]}
                     </span>
-                  </td>
-                  <td>
-                    {u.is_active &&
-                      <button className="btn ghost sm" onClick={() => deactivate(u.id)}>Dezactivează</button>
-                    }
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )
+                  </span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Cont creat la</span>
+                  <span className="info-value row-id">
+                    {String(profile.created_at || "").slice(0, 10)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
       }
-    </div>
-  );
-}
 
-/* ─── Audit ─── */
-function Audit({ token }) {
-  const [rows, setRows]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr]         = useState("");
-  const [filter, setFilter]   = useState("");
+      /* 
+   DASHBOARD
+*/
+      const NAV = {
+        admin: [
+          ["grades", "📋 Note"],
+          ["students", "👩‍🎓 Elevi"],
+          ["users", "👥 Utilizatori"],
+          ["audit", "🔍 Jurnal audit"],
+        ],
+        professor: [
+          ["grades", "📋 Note"],
+          ["students", "👩‍🎓 Elevi"],
+        ],
+        student: [
+          ["grades", "📋 Note"],
+          ["profile", "👤 Profilul meu"],
+        ],
+      };
 
-  const load = useCallback(async () => {
-    setLoading(true); setErr("");
-    try { setRows(await api("/audit" + (filter ? "?status="+filter : ""), { token })); }
-    catch (ex) { setErr(ex.message); }
-    finally { setLoading(false); }
-  }, [token, filter]);
+      function Dashboard({ token, user, onLogout }) {
+        const [view, setView] = useState("grades");
+        const tabs = NAV[user.role] || [["grades", "Note"]];
+        const name =
+          (user.firstName || user.first_name || "") +
+          " " +
+          (user.lastName || user.last_name || "");
 
-  useEffect(() => { load(); }, [load]);
-
-  return (
-    <div>
-      <h1 className="page-title">Jurnal de audit</h1>
-      <p className="page-sub">Istoricul acțiunilor efectuate asupra resurselor sensibile.</p>
-      <div className="toolbar">
-        <select value={filter} onChange={e => setFilter(e.target.value)} style={{width:200}}>
-          <option value="">Toate statusurile</option>
-          <option value="SUCCESS">Doar reușite</option>
-          <option value="FORBIDDEN">Doar blocate</option>
-        </select>
-        <span className="count-label">{rows.length} înregistrări</span>
-      </div>
-      {err && <div className="alert error">{err}</div>}
-      {loading
-        ? <div className="alert info">Se încarcă jurnalul...</div>
-        : rows.length === 0
-          ? <div className="empty"><strong>Niciun eveniment înregistrat</strong></div>
-          : (
-            <table className="ledger">
-              <thead>
-                <tr>
-                  <th>Utilizator</th>
-                  <th>Acțiune</th>
-                  <th>Resursă</th>
-                  <th>Status</th>
-                  <th>Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(l => (
-                  <tr key={l.id}>
-                    <td>
-                      <span className="row-id">#{l.user_id}</span>
-                      <span className="muted"> ({l.user_role})</span>
-                    </td>
-                    <td className="row-id">{l.action}</td>
-                    <td>{l.resource_type}{l.resource_id ? " #"+l.resource_id : ""}</td>
-                    <td>
-                      <span className={"pill " + (l.status === "SUCCESS" ? "ok" : "blocked")}>
-                        {l.status === "SUCCESS" ? "Reușit" : "Blocat"}
-                      </span>
-                    </td>
-                    <td className="row-id">
-                      {String(l.created_at || "").slice(0,19).replace("T"," ")}
-                    </td>
-                  </tr>
+        return (
+          <div className="app">
+            <header className="topbar">
+              <div>
+                <div className="brand-title">Catalog Digital</div>
+                <div className="brand-sub">Sistem de management școlar</div>
+              </div>
+              <div className="who">
+                <span className="who-name">{name.trim()}</span>
+                <span className="role-pill">{ROLE_LABEL[user.role]}</span>
+                <button className="logout-btn" onClick={onLogout}>
+                  Ieși din cont
+                </button>
+              </div>
+            </header>
+            <div className="shell">
+              <nav className="sidebar">
+                <div className="sidebar-label">Navigare</div>
+                {tabs.map(([k, l]) => (
+                  <button
+                    key={k}
+                    className={"nav-btn" + (view === k ? " active" : "")}
+                    onClick={() => setView(k)}
+                  >
+                    {l}
+                  </button>
                 ))}
-              </tbody>
-            </table>
-          )
+              </nav>
+              <main className="content">
+                {view === "grades" && <Grades token={token} user={user} />}
+                {view === "students" && <Students token={token} user={user} />}
+                {view === "users" && <Users token={token} user={user} />}
+                {view === "audit" && <Audit token={token} />}
+                {view === "profile" && <MyProfile token={token} user={user} />}
+              </main>
+            </div>
+          </div>
+        );
       }
-    </div>
-  );
-}
 
-/* ─── Dashboard ─── */
-const NAV = {
-  admin:     [["grades","Note"],["students","Elevi"],["users","Utilizatori"],["audit","Jurnal audit"]],
-  professor: [["grades","Note"],["students","Elevi"]],
-  student:   [["grades","Note"]],
-};
+      /* 
+   APP ROOT
+*/
+      function App() {
+        const [token, setToken] = useState(null);
+        const [user, setUser] = useState(null);
 
-function Dashboard({ token, user, onLogout }) {
-  const [view, setView] = useState("grades");
-  const tabs = NAV[user.role] || [["grades","Note"]];
-  const name = (user.firstName || user.first_name || "") + " " + (user.lastName || user.last_name || "");
+        useEffect(() => {
+          try {
+            const s = sessionStorage.getItem("catalog");
+            if (s) {
+              const p = JSON.parse(s);
+              setToken(p.token);
+              setUser(p.user);
+            }
+          } catch (_) {}
+        }, []);
 
-  return (
-    <div className="app">
-      <header className="topbar">
-        <div>
-          <div className="brand-title">Catalog Digital</div>
-          <div className="brand-sub">Sistem de management școlar</div>
-        </div>
-        <div className="who">
-          <span className="who-name">{name.trim()}</span>
-          <span className="role-pill">{ROLE[user.role]}</span>
-          <button className="logout-btn" onClick={onLogout}>Ieși din cont</button>
-        </div>
-      </header>
-      <div className="shell">
-        <nav className="sidebar">
-          <div className="sidebar-label">Navigare</div>
-          {tabs.map(([k,l]) => (
-            <button key={k} className={"nav-btn" + (view===k?" active":"")} onClick={() => setView(k)}>{l}</button>
-          ))}
-        </nav>
-        <main className="content">
-          {view === "grades"   && <Grades   token={token} user={user} />}
-          {view === "students" && <Students token={token} />}
-          {view === "users"    && <Users    token={token} />}
-          {view === "audit"    && <Audit    token={token} />}
-        </main>
-      </div>
-    </div>
-  );
-}
+        const login = (t, u) => {
+          setToken(t);
+          setUser(u);
+          sessionStorage.setItem(
+            "catalog",
+            JSON.stringify({ token: t, user: u }),
+          );
+        };
 
-/* ─── App root ─── */
-function App() {
-  const [token, setToken] = useState(null);
-  const [user,  setUser]  = useState(null);
+        const logout = () => {
+          setToken(null);
+          setUser(null);
+          sessionStorage.removeItem("catalog");
+        };
 
-  useEffect(() => {
-    try {
-      const s = sessionStorage.getItem("catalog");
-      if (s) { const p = JSON.parse(s); setToken(p.token); setUser(p.user); }
-    } catch(_) {}
-  }, []);
+        if (!token || !user) return <Login onLogin={login} />;
+        return <Dashboard token={token} user={user} onLogout={logout} />;
+      }
 
-  const login = (t, u) => {
-    setToken(t); setUser(u);
-    sessionStorage.setItem("catalog", JSON.stringify({ token: t, user: u }));
-  };
-
-  const logout = () => {
-    setToken(null); setUser(null);
-    sessionStorage.removeItem("catalog");
-  };
-
-  if (!token || !user) return <Login onLogin={login} />;
-  return <Dashboard token={token} user={user} onLogout={logout} />;
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-</script>
-</body>
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
 </html>
